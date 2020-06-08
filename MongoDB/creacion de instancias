@@ -1,0 +1,31 @@
+config ={ "_id": "lad-prod", "members":[ {"_id":0, "host": "mongo1:27017"},{"_id":1, "host": "mongo2:27017"},{"_id":2, "host": "mongo3:27017"},{"_id":3,"host":"mongo4:27017"}]}
+
+
+use admin
+db.createUser(
+  {
+    user: "superadmin",
+    pwd: "admin",
+    roles: [ { role: "userAdminAnyDatabase", db: "admin" }, "readWriteAnyDatabase" ]
+  }
+)
+
+db.createUser(
+  {
+    user: "userTest",
+    pwd: "test",
+    roles: [ { role: "readWrite", db: "test" } ]
+  }
+)
+
+docker run -it --name mongo1 -v /mongo/data1:/data/db -v /mongo/data1/mongod.conf:/etc/mongod.conf -p 27017:27017  --network my-cluster-mongo -d mongo-lad
+
+
+docker run -it --name mongo2 -v /mongo/data2:/data/db -v /mongo/data2/mongod.conf:/etc/mongod.conf --network my-cluster-mongo -d mongo-lad
+
+
+docker run -it --name mongo3 -v /mongo/data3:/data/db -v /mongo/data3/mongod.conf:/etc/mongod.conf --network my-cluster-mongo -d mongo-lad
+
+
+docker run -it --name mongo4 -v /mongo/data4:/data/db -v /mongo/data4/mongod.conf:/etc/mongod.conf --network my-cluster-mongo -d mongo-lad
+
